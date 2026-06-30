@@ -1,0 +1,7 @@
+# Actualiza solo el código compilado sobre la imagen que ya corre en el VPS.
+# No descarga node:20-alpine (evita rate limit de Docker Hub).
+ARG BASE_IMAGE=ghcr.io/gianlucafarias/ceres-api:64d49917c7e668ebf20b49e0613126e6ded12d4e
+FROM ${BASE_IMAGE}
+USER root
+COPY dist /app/dist
+USER node
