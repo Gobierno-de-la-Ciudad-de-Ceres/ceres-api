@@ -3,5 +3,5 @@
 ARG BASE_IMAGE=ghcr.io/gianlucafarias/ceres-api:64d49917c7e668ebf20b49e0613126e6ded12d4e
 FROM ${BASE_IMAGE}
 USER root
-COPY dist /app/dist
+COPY .deploy-dist /app/dist
 USER node

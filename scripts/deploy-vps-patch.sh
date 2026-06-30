@@ -16,6 +16,14 @@ echo "Compilando ceres-api (${TAG}) con Node del servidor..."
 npm ci
 npm run build
 
+if [ ! -d dist ] || [ -z "$(ls -A dist 2>/dev/null)" ]; then
+  echo "ERROR: nest build no generó dist/"
+  exit 1
+fi
+
+rm -rf .deploy-dist
+cp -a dist .deploy-dist
+
 echo "Parcheando imagen Docker (sin pull de node:alpine)..."
 docker build -f Dockerfile.patch \
   --build-arg "BASE_IMAGE=${BASE_IMAGE}" \
