@@ -86,6 +86,10 @@ export class ReclamosHistorialService {
       .getMany();
   }
 
+  async eliminarPorReclamo(reclamoId: number): Promise<void> {
+    await this.repo.delete({ reclamoId });
+  }
+
   private saveChange(change: HistorialChange): Promise<ReclamoHistorial> {
     const entity = this.repo.create({
       reclamoId: change.reclamoId,

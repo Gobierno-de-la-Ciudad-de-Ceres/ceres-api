@@ -124,6 +124,7 @@ export class ReclamosService {
     }
 
     tryDeleteReclamoImageFile(rec.imagen);
+    await this.historialService.eliminarPorReclamo(id);
     await this.reclamosRepo.deleteById(id);
 
     return { success: true, id };
