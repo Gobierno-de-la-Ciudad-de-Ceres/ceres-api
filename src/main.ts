@@ -70,11 +70,17 @@ async function bootstrap() {
 
   const mediaPodaPath =
     process.env.MEDIA_PODA_PATH ?? resolve(process.cwd(), 'media', 'poda');
+  const mediaReclamosPath =
+    process.env.MEDIA_RECLAMOS_PATH ?? resolve(process.cwd(), 'media', 'reclamos');
   const modifiedCertificatesPath =
     process.env.MODIFIED_CERTIFICATES_PATH ??
     resolve(process.cwd(), 'modified_certificates');
 
   app.use('/media/poda', express.static(mediaPodaPath));
+  // Compat: URLs viejas del bot usaban /api/media/poda
+  app.use('/api/media/poda', express.static(mediaPodaPath));
+  app.use('/media/reclamos', express.static(mediaReclamosPath));
+  app.use('/api/media/reclamos', express.static(mediaReclamosPath));
   app.use('/modified_certificates', express.static(modifiedCertificatesPath));
 
   const generalLimiter = rateLimit({

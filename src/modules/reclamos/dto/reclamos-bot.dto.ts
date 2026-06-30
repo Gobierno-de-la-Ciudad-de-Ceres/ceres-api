@@ -34,6 +34,11 @@ export class CrearReclamoBotDto {
   @IsOptional()
   @IsString()
   prioridad?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(512)
+  imagen?: string;
 }
 
 export class UltimoReclamoBotQueryDto {

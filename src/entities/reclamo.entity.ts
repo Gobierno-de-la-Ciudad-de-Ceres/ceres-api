@@ -38,6 +38,9 @@ export class Reclamo {
   @Column({ type: 'numeric', nullable: true })
   longitud?: number | null;
 
+  @Column({ type: 'varchar', length: 512, nullable: true })
+  imagen?: string | null;
+
   @Column({ type: 'int', nullable: true })
   cuadrillaid!: number | null;
 }
