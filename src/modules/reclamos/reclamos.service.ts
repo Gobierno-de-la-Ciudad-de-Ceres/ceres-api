@@ -11,6 +11,7 @@ import { NotificacionesService } from '../notificaciones/notificaciones.service'
 import { ReclamosHistorialService } from './reclamos-historial.service';
 import { ReclamosRepository } from './reclamos.repository';
 import { ReclamosStatsService } from './reclamos-stats.service';
+import { tryDeleteReclamoImageFile } from './reclamo-media.util';
 
 type ReclamoSafe = Omit<Reclamo, 'telefono'> & { telefono?: string };
 type ReclamoTipoBot = { id: number; nombre: string };
@@ -114,6 +115,18 @@ export class ReclamosService {
       data,
       total: data.length,
     };
+  }
+
+  async eliminarAdmin(id: number): Promise<{ success: true; id: number }> {
+    const rec = await this.reclamosRepo.findById(id);
+    if (!rec) {
+      throw new NotFoundException(`Reclamo con id ${id} no encontrado`);
+    }
+
+    tryDeleteReclamoImageFile(rec.imagen);
+    await this.reclamosRepo.deleteById(id);
+
+    return { success: true, id };
   }
 
   async actualizarAdmin(id: number, dto: ActualizarReclamoAdminDto) {

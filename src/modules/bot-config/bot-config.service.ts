@@ -19,6 +19,18 @@ export class BotConfigService {
     return this.repo.find();
   }
 
+  async getMensajesBienvenidaActivos() {
+    const rows = await this.repo.find({ order: { id: 'ASC' } });
+    const now = Date.now();
+
+    return rows.filter((row) => {
+      if (!row.activo) return false;
+      if (!row.fecha_expiracion) return true;
+      const exp = row.fecha_expiracion.getTime();
+      return Number.isFinite(exp) && exp >= now;
+    });
+  }
+
   async getByKey(clave: string) {
     return this.repo.findOne({ where: { clave } });
   }

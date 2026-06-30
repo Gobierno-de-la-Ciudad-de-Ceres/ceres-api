@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   ParseIntPipe,
   Param,
@@ -76,5 +77,10 @@ export class ReclamosAdminController {
     @Body() dto: ActualizarReclamoAdminDto,
   ) {
     return this.service.actualizarAdmin(id, dto);
+  }
+
+  @Delete(':id')
+  eliminar(@Param('id', ParseIntPipe) id: number) {
+    return this.service.eliminarAdmin(id);
   }
 }

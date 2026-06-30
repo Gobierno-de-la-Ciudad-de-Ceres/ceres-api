@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PDFDocument, PDFFont, PDFPage, StandardFonts, rgb } from 'pdf-lib';
 import { format } from 'date-fns';
@@ -6,9 +6,12 @@ import { es } from 'date-fns/locale';
 import { Repository } from 'typeorm';
 import { Reclamo } from '../../entities/reclamo.entity';
 import { ReclamoHistorial } from '../../entities/reclamo-historial.entity';
+import { loadReclamoImage } from '../reclamos/reclamo-media.util';
 
 @Injectable()
 export class ReclamosPdfService {
+  private readonly logger = new Logger(ReclamosPdfService.name);
+
   constructor(
     @InjectRepository(Reclamo)
     private readonly reclamoRepo: Repository<Reclamo>,
@@ -218,6 +221,45 @@ export class ReclamosPdfService {
       [`Nombre: ${reclamo.nombre}`, `Teléfono: ${reclamo.telefono}`],
       y,
     );
+
+    const reclamoImage = await loadReclamoImage(reclamo.imagen);
+    if (reclamoImage) {
+      try {
+        const embeddedImage =
+          reclamoImage.extension === 'png'
+            ? await pdfDoc.embedPng(reclamoImage.buffer)
+            : await pdfDoc.embedJpg(reclamoImage.buffer);
+
+        const maxWidth = width - margin * 2;
+        const maxHeight = Math.min(220, Math.max(80, y - 100));
+        const scale = Math.min(
+          maxWidth / embeddedImage.width,
+          maxHeight / embeddedImage.height,
+          1,
+        );
+        const imageWidth = embeddedImage.width * scale;
+        const imageHeight = embeddedImage.height * scale;
+
+        addText('Foto adjunta', margin, y, {
+          size: subtitleSize,
+          bold: true,
+          color: primaryColor,
+        });
+        y -= lineHeight * 1.2;
+
+        page.drawImage(embeddedImage, {
+          x: margin,
+          y: y - imageHeight,
+          width: imageWidth,
+          height: imageHeight,
+        });
+        y -= imageHeight + sectionSpacing;
+      } catch {
+        this.logger.warn(
+          `No se pudo incrustar imagen del reclamo #${reclamo.id}`,
+        );
+      }
+    }
 
     const historialFiltrado = historial.filter(
       (item) => item.tipo === 'ESTADO',

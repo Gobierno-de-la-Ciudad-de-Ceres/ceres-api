@@ -31,6 +31,10 @@ export class ReclamosRepository {
     return this.repo.findOne({ where: { id } });
   }
 
+  deleteById(id: number): Promise<void> {
+    return this.repo.delete(id).then(() => undefined);
+  }
+
   findByTelefono(telefono: string): Promise<Reclamo[]> {
     return this.repo.find({
       where: { telefono },
